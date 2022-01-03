@@ -1,0 +1,19 @@
+{
+  "name": "react-variance-graph",
+  "version": "1.0.0",
+  "description": "Dynamic visualization data table with ReactJS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JiayiLi1999/react_variance_graph.git"
+  },
+  "author": "JiayiLi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JiayiLi1999/react_variance_graph/issues"
+  },
+  "homepage": "https://github.com/JiayiLi1999/react_variance_graph#readme"
+}
