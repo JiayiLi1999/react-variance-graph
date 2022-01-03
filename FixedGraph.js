@@ -18,44 +18,54 @@ class FixedGraph extends React.Component{
         }
         this.length = this.pack ? Object.values(this.pack)[0].length : this.data[0].length;
         this.titles = this.props.titles;
-        this.timeGap = this.props.timeGap ? this.props.timeGap : 2000;
-        this.transition = this.props.transition ? this.props.transition: 500;
-        this.delay = this.props.delay ? this.props.delay : 0;
-        this.repeat = this.props.repeat ? this.props.repeat : true;
+
+        let colors = []
+        let colorTheme = this.props.colorTheme && this.props.colorTheme in colorsDic ? this.props.colorTheme :'Red';
         if(this.props.colors){
-            this.colors = [];
-            for(let i=0;i<this.length;i++) this.colors[i] = this.props.colors[i%this.props.colors.length];
+            for(let i=0;i<this.length;i++) colors[i] = this.props.colors[i%this.props.colors.length];
         }else{
-            let colorTheme = this.props.theme && this.props.theme in colorsDic ? this.props.theme :'Red';
-            this.colors = Array.from({length: this.length}, () =>  colorsDic[colorTheme][Math.floor(Math.random()*8)])
+            colors = Array.from({length: this.length}, () =>  colorsDic[colorTheme][Math.floor(Math.random()*8)])
         }
+
         this.state={
             round: 0,
             maxAmount: this.getMax(0),
-            started: true
+            started: true, 
+            length:this.length,
+            timeGap : this.props.timeGap ? this.props.timeGap : 2000,
+            transition : this.props.transition ? this.props.transition: 500,
+            delay : this.props.delay ? this.props.delay : 0,
+            repeat : this.props.repeat ? this.props.repeat : true,
+            colors: colors,
+            colorTheme : colorTheme,
         }
         this.nextOne = this.nextOne.bind(this);
     }
-    componentDidMount(){
+    componentDidMount(){        
         if(this.state.started){
-          const intervalId = setInterval(this.nextOne, this.timeGap + this.delay);
+          const intervalId = setInterval(this.nextOne, this.state.timeGap);
           this.setState({intervalId: intervalId});
         }
       }
-  
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.started) {
-            const intervalId = setInterval(this.nextOne, this.timeGap + this.delay);
-            this.setState({intervalId: intervalId});
-        }
-    }
 
     componentWillUnmount(){
         clearInterval(this.state.intervalId);
     }
 
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (nextProps.delay!==prevState.delay||nextProps.transition!==prevState.transition||nextProps.colorTheme!==prevState.colorTheme) {
+          return {
+            delay:nextProps.delay,
+            transition:nextProps.transition,
+            colorTheme:nextProps.colorTheme,
+            timeGap:nextProps.timeGap,
+            colors:Array.from({length: prevState.length}, () =>  colorsDic[nextProps.colorTheme?nextProps.colorTheme:'Red'][Math.floor(Math.random()*8)]),
+          };
+        }
+        return null;
+      }
+
     nextOne(){
-        console.log(this.state.round)
         if(!this.repeat && this.state.round === this.pack.length-1 ){
             clearInterval(this.state.intervalId);
             return;
@@ -73,10 +83,7 @@ class FixedGraph extends React.Component{
         Object.values(this.pack).forEach(ele => currMax = Math.max(currMax,ele[round]));
         return currMax;
     }
-    // getAttributes(entity){ }
     render(){
-        console.log('state: ',this.state); 
-        
         let List = Object.keys(this.pack).map((entity,index) => {
             return(
                 <Item
@@ -84,9 +91,9 @@ class FixedGraph extends React.Component{
                 title={entity}
                 pack={this.pack[entity][this.state.round]}
                 maxAmount={this.state.maxAmount}
-                color={this.colors[index]}
-                transition={this.transition}
-                delay={this.delay}
+                color={this.state.colors[index]}
+                transition={this.state.transition}
+                delay={this.state.delay}
                 titleStyle={this.props.titleStyle}
                 descriptionStyle={this.props.descriptionStyle}
                 barStyle={this.props.barStyle}

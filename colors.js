@@ -141,4 +141,7 @@ const colors =
       '#c0b6c9', '#d9d3de'
     ]
   }
-export default colors
+  // Object.keys(colors).forEach(e=>console.log(
+  //   `<MenuItem value={'${e}'}>${e}</MenuItem>`))
+  // console.log();
+export default colors 
